@@ -1,0 +1,11 @@
+[package]
+name = "floem-frp"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+floem = { version = "0.2.0", features = ["futures"] }
+frp = { path = "../frp" }
+futures = "0.3.31"
+futures-signals = "0.3.34"
+tokio = { version = "1.43.0", features = ["rt-multi-thread", "macros"] }
