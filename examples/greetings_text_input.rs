@@ -18,5 +18,5 @@ pub fn component() -> impl Component {
 
 #[tokio::main]
 async fn main() {
-    component().show();
+    component::show(component());
 }
