@@ -12,13 +12,13 @@ pub fn component() -> impl Component {
     let increments = increment_button.clicks().map(|_| 1);
     let decrements = decrement_button.clicks().map(|_| -1);
     let deltas = stream::merge((increments, decrements));
-    let counter = signal::recursive(0, |counter| {
-        counter
-            .signal()
-            .sample_stream_cloned(deltas)
-            .map(|(counter, delta)| counter + delta)
-            .filter(|&counter| future::ready(counter >= 0))
-    });
+    let counter = signal::placeholder(0);
+    let changes = counter
+        .signal()
+        .sample_stream_cloned(deltas)
+        .map(|(counter, delta)| counter + delta)
+        .filter(|&counter| future::ready(counter >= 0));
+    let counter = counter.fill(changes);
     let counter_text = counter
         .signal()
         .map(|counter| format!("Counter is: {counter}"));

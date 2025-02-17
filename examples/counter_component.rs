@@ -1,5 +1,7 @@
 use floem_frp::{component, ArcComponent, Component, ComponentTuple};
-use frp::{signal, stream};
+use frp::signal::FrpSignalExt;
+use frp::stream;
+use frp::stream::FrpStreamExt;
 use futures::StreamExt;
 use futures_signals::signal::{ReadOnlyMutable, Signal, SignalExt};
 
@@ -18,12 +20,7 @@ impl Counter {
         let increments = increment_button.clicks().map(|_| 1);
         let decrements = decrement_button.clicks().map(|_| -1);
         let deltas = stream::merge((increments, decrements));
-        let counter = signal::recursive(init, |counter| {
-            counter
-                .signal()
-                .sample_stream_cloned(deltas)
-                .map(|(counter, delta)| counter + delta)
-        });
+        let counter = deltas.accumulate(init, |a, b| a + b).materialize();
         let counter_text = counter
             .signal()
             .map(|counter| format!("Counter is: {counter}"));
