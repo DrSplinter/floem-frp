@@ -1,9 +1,11 @@
 use floem_frp::{component, ArcComponent, Component, ComponentTuple};
+use frp::signal;
 use frp::stream::{FrpStreamExt, MergeStreamTuple};
 use futures::StreamExt;
 
 mod clear_field;
 mod counter;
+mod counter_with_input;
 mod echo_label;
 mod greetings_label;
 mod reversed_label;
@@ -25,7 +27,11 @@ fn examples(iter: impl IntoIterator<Item = (&'static str, ArcComponent)>) -> imp
             .to_signal(component::empty().arced()),
     );
 
-    component::v_stack((selected_component, buttons.h_stack()))
+    component::v_stack((
+        selected_component,
+        component::label(signal::pending("")),
+        buttons.h_stack(),
+    ))
 }
 
 pub fn component() -> impl Component {
@@ -36,6 +42,10 @@ pub fn component() -> impl Component {
         ("Reversed label", reversed_label::component().arced()),
         ("Translate", translate::component().arced()),
         ("Counter", counter::component().arced()),
+        (
+            "Counter with input",
+            counter_with_input::component().arced(),
+        ),
     ])
 }
 
